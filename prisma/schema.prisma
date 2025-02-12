@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model usuarios {
+  id Int @id @default(autoincrement())
+  nome String
+  email String @unique
+  senha String
+  criado_em DateTime @default(now())
+
+  reservas reservas[]
+}
+
+model reservas {
+  id Int @id @default(autoincrement())
+  usuario_id Int
+  sala_id Int
+  dia_hora_inicio DateTime
+  dia_hora_fim DateTime
+  status String
+  motivo_cancelamento String?
+  criado_em DateTime @default(now())
+
+  usuario usuarios @relation(fields: [usuario_id], references: [id])
+  sala salas @relation(fields: [sala_id], references: [id])
+}
+
+model salas {
+  id Int @id @default(autoincrement())
+  numero Int
+  andar Int
+
+  reserva reservas[]
+  horarios_salas horarios_salas[]
+  salas_recursos salas_recursos[]
+}
+
+model salas_recursos {
+  id Int @id @default(autoincrement())
+  sala_id Int
+  recurso_id Int
+  quantidade Int
+
+  sala salas @relation(fields: [sala_id], references: [id])
+  recurso recursos @relation(fields: [recurso_id], references: [id])
+}
+
+model recursos {
+  id Int @id @default(autoincrement())
+  nome String
+
+  salas_recursos salas_recursos[]
+}
+
+model horarios_salas {
+  id Int @id @default(autoincrement())
+  sala_id Int
+  dia_hora_inicio DateTime
+  dia_hora_fim DateTime
+
+  sala salas @relation(fields: [sala_id], references: [id])
+}
+
