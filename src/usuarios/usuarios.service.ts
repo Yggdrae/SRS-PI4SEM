@@ -1,3 +1,5 @@
+import * as bcrypt from 'bcrypt';
+
 import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Usuario } from "./usuarios.entity";
@@ -14,9 +16,16 @@ export class UsuariosService {
         return usuarios;
     }
 
-    createUsuarios(createUserDTO: createUserDTO) {
+    async createUsuarios(createUserDTO: createUserDTO) {
         try {
-            this.usuariosRepository.save({ ...createUserDTO, criadoEm: new Date() })
+            const hashedPassword = await bcrypt.hash(createUserDTO.senha, 10);
+            const usuario = this.usuariosRepository.create({
+                ...createUserDTO,
+                senha: hashedPassword,
+                criadoEm: new Date(),
+            });
+        return await this.usuariosRepository.save(usuario);
+
         }
         catch (error) {
             console.log(error);
