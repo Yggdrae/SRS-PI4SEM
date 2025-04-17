@@ -15,13 +15,13 @@ export class AuthService {
     const usuario = await this.usuariosRepository.findOne({ where: { email } });
 
     if (!usuario) {
-      throw new Error('Usuário não encontrado');
+      return new Error('Usuário não encontrado');
     }
 
     const passwordMatches = await bcrypt.compare(senha, usuario.senha);
 
     if (!passwordMatches) {
-      throw new Error('Senha incorreta');
+      return new Error('Senha incorreta');
     }
 
     return {
