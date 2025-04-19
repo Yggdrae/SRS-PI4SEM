@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Put } from "@nestjs/common";
 import { UsuariosService } from "./usuarios.service";
 import { createUserDTO } from "./dto/usuarios.dto";
 import { Usuario } from "./usuarios.entity";
@@ -14,6 +14,13 @@ export class UsuariosController {
 
     @Post('/create')
     createUsuarios(@Body() createUserDTO: createUserDTO) {
-        this.usuariosService.createUsuarios(createUserDTO);
+        return this.usuariosService.createUsuarios(createUserDTO);
     }
+
+    @Put('/:id')
+    updateUsuarios(@Param('id',ParseIntPipe)id: number,
+    @Body() updateData: Partial<createUserDTO>): Promise<Usuario>{
+        return this.usuariosService.updateUsuarios(id, updateData);
+    }
+        
 }

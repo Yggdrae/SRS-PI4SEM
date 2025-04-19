@@ -28,11 +28,22 @@ export class UsuariosService {
 
         }
         catch (error) {
-            console.log(error);
-            return new HttpError(
-                500,
-                "Erro interno do servidor"
-            )
+            console.log(error.message);
+            throw new HttpError(500, 'O E-mail já existe' );
         }
+    }
+
+    async updateUsuarios(id:number, updateData:Partial<createUserDTO>): Promise<Usuario>{
+        const usuario = await this.usuariosRepository.findOne({where: {id} });
+
+        if (!usuario){
+            throw new Error ('usuario não encontrado!');
+        }
+        if (updateData.senha){
+            updateData.senha = await bcrypt.hash (updateData.senha, 10);
+        }
+
+        Object.assign(usuario, updateData);
+        return await this.usuariosRepository.save(usuario);
     }
 }
