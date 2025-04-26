@@ -35,4 +35,12 @@ export class HorariosSalasService {
             throw new NotFoundException("Horário de sala não encontrado");
         }
     }
+
+    async getHorariosPorSala(salaId: number): Promise<HorariosSalas[]> {
+        return this.horariosSalasRepository.find({
+          where: { sala: salaId },
+          relations: ['sala'],
+        });
+    }
+      
 }
