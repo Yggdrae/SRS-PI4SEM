@@ -16,4 +16,7 @@ export class Usuario {
 
     @Column()
     criadoEm: Date;
+
+    @Column()
+    tipo: string;
 }

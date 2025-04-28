@@ -1,7 +1,6 @@
-    export interface Usuario {
-            id: number,
-            nome: string,
-            email: string,
-            senha: string,
-            criadoEm: Date
-        }
+export class createUserDTO {
+    nome: string;
+    email: string;
+    senha: string;
+    tipo: string;
+}

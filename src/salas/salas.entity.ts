@@ -11,6 +11,10 @@ export class Salas {
   @Column()
   andar: number;
 
-  @Column('decimal', { precision: 10, scale:2})
+  @Column('decimal', { precision: 10, scale: 2 })
   valorHora: number;
+
+  @Column({ default: false })
+  isDestaque: boolean;
+
 }

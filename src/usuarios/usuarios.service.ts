@@ -1,49 +1,54 @@
 import * as bcrypt from 'bcrypt';
-
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, NotFoundException, ConflictException, BadRequestException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Usuario } from "./usuarios.entity";
 import { createUserDTO } from "./dto/usuarios.dto";
-import { HttpError } from "src/http/Error";
 
 @Injectable()
 export class UsuariosService {
-    constructor(@Inject('USUARIOS_REPOSITORY')
-    private usuariosRepository: Repository<Usuario>) { }
+  constructor(
+    @Inject('USUARIOS_REPOSITORY')
+    private usuariosRepository: Repository<Usuario>,
+  ) {}
 
-    async getUsuarios(): Promise<Usuario[]> {
-        const usuarios = await this.usuariosRepository.find();
-        return usuarios;
+  async getUsuarios(): Promise<Usuario[]> {
+    return await this.usuariosRepository.find();
+  }
+
+  async createUsuarios(createUserDTO: createUserDTO) {
+    if (!createUserDTO.email || !createUserDTO.senha || !createUserDTO.tipo) {
+      throw new BadRequestException('Email, senha e tipo são obrigatórios');
     }
 
-    async createUsuarios(createUserDTO: createUserDTO) {
-        try {
-            const hashedPassword = await bcrypt.hash(createUserDTO.senha, 10);
-            const usuario = this.usuariosRepository.create({
-                ...createUserDTO,
-                senha: hashedPassword,
-                criadoEm: new Date(),
-            });
-        return await this.usuariosRepository.save(usuario);
+    try {
+      const hashedPassword = await bcrypt.hash(createUserDTO.senha, 10);
+      const usuario = this.usuariosRepository.create({
+        ...createUserDTO,
+        senha: hashedPassword,
+        criadoEm: new Date(),
+      });
+      return await this.usuariosRepository.save(usuario);
+    } catch (error) {
+      if (error.code === 'ER_DUP_ENTRY' || error.code === '23505') {
+        throw new ConflictException('O e-mail informado já está em uso');
+      }
+      console.error(error);
+      throw new BadRequestException('Erro ao criar usuário');
+    }
+  }
 
-        }
-        catch (error) {
-            console.log(error.message);
-            throw new HttpError(500, 'O E-mail já existe' );
-        }
+  async updateUsuarios(id: number, updateData: Partial<createUserDTO>): Promise<Usuario> {
+    const usuario = await this.usuariosRepository.findOne({ where: { id } });
+
+    if (!usuario) {
+      throw new NotFoundException('Usuário não encontrado');
     }
 
-    async updateUsuarios(id:number, updateData:Partial<createUserDTO>): Promise<Usuario>{
-        const usuario = await this.usuariosRepository.findOne({where: {id} });
-
-        if (!usuario){
-            throw new Error ('usuario não encontrado!');
-        }
-        if (updateData.senha){
-            updateData.senha = await bcrypt.hash (updateData.senha, 10);
-        }
-
-        Object.assign(usuario, updateData);
-        return await this.usuariosRepository.save(usuario);
+    if (updateData.senha) {
+      updateData.senha = await bcrypt.hash(updateData.senha, 10);
     }
+
+    Object.assign(usuario, updateData);
+    return await this.usuariosRepository.save(usuario);
+  }
 }
