@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { Repository } from "typeorm";
 import { Usuario } from '../usuarios/usuarios.entity';
 import { LoginDTO } from './dto/login.dto';
@@ -15,13 +15,13 @@ export class AuthService {
     const usuario = await this.usuariosRepository.findOne({ where: { email } });
 
     if (!usuario) {
-      return new Error('Usuário não encontrado');
+      return new NotFoundException('Usuário não encontrado');
     }
 
     const passwordMatches = await bcrypt.compare(senha, usuario.senha);
 
     if (!passwordMatches) {
-      return new Error('Senha incorreta');
+      return new UnauthorizedException('Senha incorreta');
     }
 
     return {

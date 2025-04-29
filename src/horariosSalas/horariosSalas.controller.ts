@@ -5,12 +5,18 @@ import { HorariosSalasInterface } from "./interfaces/horariosSalas.interface";
 
 @Controller('horarios_salas')
 export class HorariosSalasController {
-    constructor(private horariosSalasService: HorariosSalasService) {}
+    constructor(private horariosSalasService: HorariosSalasService) { }
 
     @Get()
     getHorariosSalas(): Promise<HorariosSalas[]> {
         return this.horariosSalasService.getHorariosSalas();
     }
+
+    @Get('sala/:id')
+    getHorariosPorSala(@Param('id', ParseIntPipe) id: number): Promise<HorariosSalas[]> {
+        return this.horariosSalasService.getHorariosPorSala(id);
+    }
+
 
     @Post()
     createHorarioSala(@Body() data: HorariosSalasInterface): Promise<HorariosSalas> {

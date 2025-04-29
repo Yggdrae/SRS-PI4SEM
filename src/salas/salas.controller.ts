@@ -4,8 +4,8 @@ import { Salas } from "./salas.entity";
 import { SalasInterface } from "./interfaces/salas.interface";
 
 @Controller('salas')
-export class SalasController{
-    constructor(private salasService: SalasService) {}
+export class SalasController {
+    constructor(private salasService: SalasService) { }
 
     @Get()
     getSalas(): Promise<Salas[]> {
@@ -13,7 +13,7 @@ export class SalasController{
     }
 
     @Post()
-    createSalas(@Body() data: SalasInterface): Promise<Salas>{
+    createSalas(@Body() data: SalasInterface): Promise<Salas> {
         return this.salasService.createSalas(data);
     }
 
@@ -29,4 +29,10 @@ export class SalasController{
     deleteSalas(@Param('id', ParseIntPipe) id: number): Promise<void> {
         return this.salasService.deleteSalas(id);
     }
+
+    @Get('/destaques')
+    getSalasDestaque(): Promise<Salas[]> {
+        return this.salasService.getSalasDestaque();
+    }
+
 }
