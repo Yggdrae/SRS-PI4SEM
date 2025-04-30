@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { DisponibilidadeSalas } from 'src/disponibilidadeSalas/disponibilidadeSalas.entity';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class Salas {
@@ -16,5 +17,9 @@ export class Salas {
 
   @Column({ default: false })
   isDestaque: boolean;
+
+  @OneToMany(() => DisponibilidadeSalas, disponibilidade => disponibilidade.sala)
+  disponibilidades: DisponibilidadeSalas[];
+
 
 }
