@@ -14,8 +14,8 @@ export class Reservas {
     @ManyToOne(() => Salas, (sala) => sala.id)
     sala: number;
 
-    @ManyToMany(() => HorariosSalas, (horario) => horario.id)
-    horario: number;
+    @ManyToOne(() => HorariosSalas)
+    horario: HorariosSalas;
 
     @Column()
     status: string;
