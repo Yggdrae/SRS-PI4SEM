@@ -1,10 +1,14 @@
 import { DisponibilidadeSalas } from 'src/disponibilidadeSalas/disponibilidadeSalas.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Reservas } from 'src/reservas/reservas.entity';
 
 @Entity()
 export class Salas {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @OneToMany(() => Reservas, reserva => reserva.sala)
+  reservas: Reservas[];
 
   @Column()
   numero: number;

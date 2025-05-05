@@ -25,9 +25,17 @@ export class DisponibilidadeSalasService {
         }
 
         const [hours, minutes] = time.split(':').map(Number);
-        const result = new Date(date); 
-        result.setHours(hours, minutes, 0, 0);
-        return result;
+
+        // Criar nova data com o mesmo ano/mês/dia, e horário fixado
+        return new Date(
+            date.getFullYear(),
+            date.getMonth(),
+            date.getDate(),
+            hours,
+            minutes,
+            0,
+            0
+        );
     }
 
     async getHorarioReal(salaId: number, data: string): Promise<{ horarioInicio: string, horarioFim: string }[] | null> {
@@ -60,7 +68,7 @@ export class DisponibilidadeSalasService {
         // Buscar as reservas para a sala nesse dia
         const reservas = await this.reservasRepository.find({
             where: {
-                sala: salaId,
+                sala: sala,  // Passa a entidade sala completa
             },
             relations: ['horario'],
         });
@@ -77,35 +85,32 @@ export class DisponibilidadeSalasService {
         // Para cada disponibilidade, verificar se está ocupado
         for (let d of disponibilidade) {
             let inicioDisponivel = this.convertTimeToDate(d.horarioInicio, new Date(data));
-            let fimDisponivel = this.convertTimeToDate(d.horarioFim, new Date(data));
+            const fimDisponivel = this.convertTimeToDate(d.horarioFim, new Date(data));
 
             // Ordenar as reservas pelo horário de início
-            const reservasOrdenadas = horariosReservados.sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
+            const reservasOrdenadas = horariosReservados
+                .filter(r => r.inicio < fimDisponivel && r.fim > inicioDisponivel) // apenas interseções
+                .sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
 
             // Verificar se a disponibilidade está ocupada por algum horário reservado
-            for (let reserva of reservasOrdenadas) {
-                // Se o horário da reserva está dentro do intervalo da disponibilidade
-                if (inicioDisponivel < reserva.inicio && fimDisponivel > reserva.fim) {
-                    // Adicionar o intervalo antes da reserva
+            for (const reserva of reservasOrdenadas) {
+                if (reserva.inicio > inicioDisponivel) {
+                    // Intervalo disponível antes da reserva
                     horariosDisponiveis.push({
-                        horarioInicio: inicioDisponivel.toISOString().substring(11, 16),
-                        horarioFim: reserva.inicio.toISOString().substring(11, 16),
+                        horarioInicio: `${inicioDisponivel.getHours().toString().padStart(2, '0')}:${inicioDisponivel.getMinutes().toString().padStart(2, '0')}`,
+                        horarioFim: `${reserva.inicio.getHours().toString().padStart(2, '0')}:${reserva.inicio.getMinutes().toString().padStart(2, '0')}`,
                     });
-
-                    // Ajustar o início para depois da reserva
-                    inicioDisponivel = reserva.fim;
-                } else if (inicioDisponivel >= reserva.inicio && fimDisponivel <= reserva.fim) {
-                    // Se a disponibilidade está totalmente ocupada pela reserva, não adiciona
-                    inicioDisponivel = fimDisponivel;
-                    break;
                 }
+
+                // Atualiza início para depois da reserva (máximo para evitar retrocessos)
+                inicioDisponivel = new Date(Math.max(inicioDisponivel.getTime(), reserva.fim.getTime()));
             }
 
             // Se sobrou um horário disponível depois da última reserva
             if (inicioDisponivel < fimDisponivel) {
                 horariosDisponiveis.push({
-                    horarioInicio: inicioDisponivel.toISOString().substring(11, 16),
-                    horarioFim: fimDisponivel.toISOString().substring(11, 16),
+                    horarioInicio: `${inicioDisponivel.getHours().toString().padStart(2, '0')}:${inicioDisponivel.getMinutes().toString().padStart(2, '0')}`,
+                    horarioFim: `${fimDisponivel.getHours().toString().padStart(2, '0')}:${fimDisponivel.getMinutes().toString().padStart(2, '0')}`,
                 });
             }
         }

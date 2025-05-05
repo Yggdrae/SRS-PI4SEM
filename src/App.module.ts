@@ -7,10 +7,11 @@ import { ReservasModule } from "./reservas/reservas.module";
 import { SalasRecursosModule } from "./salasRecursos/salasRecursos.module";
 import { AuthModule } from './auth/auth.module';
 import { DisponibilidadeSalasModule } from './disponibilidadeSalas/disponibilidadeSalas.module';
+import { DatabaseModule } from "./db/database.module";
 
 
 @Module({
-    imports: [HorariosSalasModule, RecursosModule, ReservasModule, SalasModule, SalasRecursosModule, UsuariosModule, AuthModule, DisponibilidadeSalasModule]
+    imports: [DatabaseModule, HorariosSalasModule, RecursosModule, ReservasModule, SalasModule, SalasRecursosModule, UsuariosModule, AuthModule, DisponibilidadeSalasModule]
 })
 
 export class AppModule { };

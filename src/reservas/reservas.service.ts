@@ -1,12 +1,21 @@
 import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { Reservas } from "./reservas.entity";
+import { Usuario } from 'src/usuarios/usuarios.entity';
+import { Salas } from 'src/salas/salas.entity';
 import { ReservasInterface } from "./interfaces/reservas.interface";
 import { HorariosSalas } from "src/horariosSalas/horariosSalas.entity";
 
 @Injectable()
 export class ReservasService {
   constructor(
+
+    @Inject('USUARIOS_REPOSITORY')
+    private usuariosRepository: Repository<Usuario>,
+
+    @Inject('SALAS_REPOSITORY')
+    private salasRepository: Repository<Salas>,
+
     @Inject('RESERVAS_REPOSITORY')
     private reservasRepository: Repository<Reservas>,
 
@@ -22,17 +31,31 @@ export class ReservasService {
     return await this.reservasRepository.find({
       relations: ['horario'],
     });
-  }  
+  }
 
   async createReserva(data: ReservasInterface): Promise<Reservas> {
-    const horario = await this.horariosRepository.findOneBy(data.horario);
+    // Buscar a entidade HorariosSalas pelo ID
+    const horario = await this.horariosRepository.findOneBy({ id: data.horario.id });
     if (!horario) throw new BadRequestException('Horário não encontrado');
 
+    // Buscar a entidade Usuario pelo ID
+    const usuario = await this.usuariosRepository.findOne({ where: { id: data.usuario } });
+    if (!usuario) throw new BadRequestException('Usuário não encontrado');
+
+    // Buscar a entidade Salas pelo ID
+    const sala = await this.salasRepository.findOne({ where: { id: data.sala } });
+    if (!sala) throw new BadRequestException('Sala não encontrada');
+
+    // Criar a reserva associando as entidades encontradas
     const reserva = this.reservasRepository.create({
-      ...data,
-      horario
+      usuario,
+      sala,
+      horario,
+      status: data.status,
+      motivoCancelamento: data.motivoCancelamento,
     });
 
+    // Salvar a reserva no banco de dados
     return await this.reservasRepository.save(reserva);
   }
 

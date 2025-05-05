@@ -20,20 +20,24 @@ export class HorariosSalasService {
         const { sala, diaHoraInicio, diaHoraFim } = data;
 
         const reservaExistente = await this.horariosSalasRepository.createQueryBuilder('horario')
-          .where('horario.sala = :sala', { sala })
-          .andWhere(
-            '(horario.diaHoraInicio < :diaHoraFim AND horario.diaHoraFim > :diaHoraInicio)',
-            { diaHoraInicio, diaHoraFim }
-          )
-          .getOne();
-    
+            .where('horario.sala = :sala', { sala })
+            .andWhere(
+                '(horario.diaHoraInicio < :diaHoraFim AND horario.diaHoraFim > :diaHoraInicio)',
+                { diaHoraInicio, diaHoraFim }
+            )
+            .getOne();
+
         if (reservaExistente) {
             throw new BadRequestException('Já existe uma reserva para esta sala no horário solicitado');
         }
-    
-        const horario = this.horariosSalasRepository.create(data);
+
+        const horario = this.horariosSalasRepository.create({
+            sala: { id: data.sala },
+            diaHoraInicio,
+            diaHoraFim,
+        });
         return await this.horariosSalasRepository.save(horario);
-        }
+    }
 
     async updateHorarioSala(id: number, data: Partial<HorariosSalasInterface>): Promise<HorariosSalas> {
         const horario = await this.horariosSalasRepository.findOne({ where: { id } });
@@ -46,7 +50,16 @@ export class HorariosSalasService {
             throw new BadRequestException('Nenhum dado informado para atualização');
         }
 
-        Object.assign(horario, data);
+        if (data.sala) {
+            horario.sala = { id: data.sala } as any;
+        }
+        if (data.diaHoraInicio) {
+            horario.diaHoraInicio = data.diaHoraInicio;
+        }
+        if (data.diaHoraFim) {
+            horario.diaHoraFim = data.diaHoraFim;
+        }
+
         return await this.horariosSalasRepository.save(horario);
     }
 
@@ -60,7 +73,7 @@ export class HorariosSalasService {
 
     async getHorariosPorSala(salaId: number): Promise<HorariosSalas[]> {
         const horarios = await this.horariosSalasRepository.find({
-            where: { sala: salaId },
+            where: { sala: { id: salaId } },
             relations: ['sala'],
         });
 

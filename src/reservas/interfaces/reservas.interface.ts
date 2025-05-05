@@ -4,4 +4,4 @@ export interface ReservasInterface {
     horario: { id: number };
     status: string;
     motivoCancelamento: string;
-}  
+}

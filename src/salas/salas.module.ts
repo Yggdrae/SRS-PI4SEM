@@ -6,8 +6,9 @@ import { salasProviders } from "./salas.providers";
 
 @Module({
     controllers: [SalasController],
-        imports: [DatabaseModule],
-        providers: [...salasProviders, SalasService]
+    imports: [DatabaseModule],
+    providers: [...salasProviders, SalasService],
+    exports:[...salasProviders]
 })
 
-export class SalasModule {};
+export class SalasModule { };

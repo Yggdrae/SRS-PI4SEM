@@ -19,7 +19,11 @@ export class SalasRecursosService {
             throw new BadRequestException('Dados obrigatórios (sala, recurso e quantidade) devem ser informados');
         }
 
-        const entity = this.salasRecursosRepository.create(data);
+        const entity = this.salasRecursosRepository.create({
+            sala: { id: data.sala },
+            recurso: { id: data.recurso },
+            quantidade: data.quantidade,
+        });    
         return await this.salasRecursosRepository.save(entity);
     }
 

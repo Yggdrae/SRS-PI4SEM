@@ -8,10 +8,10 @@ export class SalasRecursos {
     id: number;
 
     @ManyToOne(() => Salas, (sala) => sala.id)
-    sala: number;
-
+    sala: Salas;
+    
     @ManyToOne(() => Recursos, (recurso) => recurso.id)
-    recurso: number;
+    recurso: Recursos;
 
     @Column()   
     quantidade: number;
