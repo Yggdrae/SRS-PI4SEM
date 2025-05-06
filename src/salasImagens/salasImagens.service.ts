@@ -11,11 +11,16 @@ export class SalasImagensService {
   ) { }
 
   async getImagens(): Promise<SalasImagens[]> {
-    return await this.salasImagensRepository.find();
+    return await this.salasImagensRepository.find({
+      relations: ['sala'],
+    });
   }
 
   async getImagemById(id: number): Promise<SalasImagens> {
-    const imagem = await this.salasImagensRepository.findOne({ where: { id } });
+    const imagem = await this.salasImagensRepository.findOne({
+      where: { id },
+      relations: ['sala'],
+    });
     if (!imagem) {
       throw new NotFoundException(`Imagem com ID ${id} não encontrada`);
     }
@@ -27,7 +32,11 @@ export class SalasImagensService {
       throw new BadRequestException('Dados obrigatórios (sala e imagem) devem ser informados');
     }
 
-    const imagem = this.salasImagensRepository.create(data);
+    const imagem = this.salasImagensRepository.create({
+      sala: { id: data.sala },
+      imagem: data.imagem,
+    });
+
     return await this.salasImagensRepository.save(imagem);
   }
 

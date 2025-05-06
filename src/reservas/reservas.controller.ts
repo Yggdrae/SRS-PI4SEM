@@ -12,6 +12,11 @@ export class ReservasController {
         return this.reservasService.getReservas();
     }
 
+    @Get('full')
+    getReservasFull(): Promise<Reservas[]> {
+        return this.reservasService.getReservasFull();
+    }
+
     @Post()
     createReserva(@Body() data: ReservasInterface): Promise<Reservas> {
         return this.reservasService.createReserva(data);

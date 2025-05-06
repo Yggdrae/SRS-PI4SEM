@@ -7,8 +7,8 @@ export class SalasImagens {
   id: number;
 
   @ManyToOne(() => Salas, (sala) => sala.id)
-  sala: number;
-
+  sala: Salas;
+  
   @Column({ type: 'bytea' }) // blob no PostgreSQL
   imagem: Buffer;
 
