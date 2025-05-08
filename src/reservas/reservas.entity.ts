@@ -1,4 +1,3 @@
-import { HorariosSalas } from "src/horariosSalas/horariosSalas.entity";
 import { Salas } from "src/salas/salas.entity";
 import { Usuario } from "src/usuarios/usuarios.entity";
 import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -15,8 +14,11 @@ export class Reservas {
     @ManyToOne(() => Salas, sala => sala.reservas)
     sala: Salas;
 
-    @ManyToOne(() => HorariosSalas, horario => horario.reservas)
-    horario: HorariosSalas;
+    @Column()
+    diaHoraInicio: Date;
+
+    @Column()
+    diaHoraFim: Date;
     
     @Column()
     status: string;
