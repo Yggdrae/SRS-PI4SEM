@@ -42,14 +42,16 @@ export class DisponibilidadeSalasService {
         const sala = await this.salasRepository.findOne({ where: { id: salaId } });
         if (!sala) throw new NotFoundException('Sala não encontrada');
     
-        const dia = new Date(data);
-        const diaInicio = new Date(`${data}T00:00:00`);
-        const diaFim = new Date(`${data}T23:59:59`);
+        const [ano, mes, diaStr] = data.split('-').map(Number);
+        const dia = new Date(ano, mes - 1, diaStr); // <-- horário locals
+        const diaInicio = new Date(Date.UTC(ano, mes - 1, diaStr, 0, 0, 0));
+        const diaFim = new Date(Date.UTC(ano, mes - 1, diaStr, 23, 59, 59, 999));
+        diaFim.setHours(23, 59, 59, 999);
     
         // Buscar reservas da sala nesse dia
         const reservas = await this.reservasRepository.find({
             where: {
-                sala: sala,
+                sala: { id: salaId },
                 diaHoraInicio: Between(diaInicio, diaFim),
             },
         });
@@ -58,14 +60,12 @@ export class DisponibilidadeSalasService {
             inicio: new Date(r.diaHoraInicio),
             fim: new Date(r.diaHoraFim),
         }));
-    
-        const dataObj = new Date(data);
-        dataObj.setHours(0, 0, 0, 0);
 
+        const dataFormatada = data.slice(0, 10);
 
         // Verificar se existe exceção para essa data
         const excecao = await this.excecoesRepository.findOne({
-            where: { sala: { id: salaId }, data: dataObj },
+            where: { sala: { id: salaId }, data: dataFormatada },
         });
                     
         if (excecao) {
