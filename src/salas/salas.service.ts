@@ -45,6 +45,15 @@ export class SalasService {
         }
     }
 
+    async getSalaById(id: number): Promise<Salas> {
+        const sala = await this.salasRepository.findOne({ where: { id } });
+        if (!sala) {
+            throw new NotFoundException(`Sala com ID ${id} não encontrada`);
+        }
+        return sala;
+    }
+    
+
     async getSalasDestaque(): Promise<Salas[]> {
         return await this.salasRepository.find({
             where: { isDestaque: true },
