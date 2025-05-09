@@ -1,3 +1,4 @@
+import { Cartao } from "src/cartoes/cartoes.entity";
 import { Reservas } from "src/reservas/reservas.entity";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -23,4 +24,9 @@ export class Usuario {
     
     @Column()
     tipo: string;
+
+    @OneToMany(() => Cartao, (cartao) => cartao.usuario)
+    cartoes: Cartao[];
+
+
 }
