@@ -41,83 +41,98 @@ export class DisponibilidadeSalasService {
     async getHorarioReal(salaId: number, data: string): Promise<{ horarioInicio: string, horarioFim: string }[] | null> {
         const sala = await this.salasRepository.findOne({ where: { id: salaId } });
         if (!sala) throw new NotFoundException('Sala não encontrada');
+    
+        const [ano, mes, diaStr] = data.split('-').map(Number);
+        const dia = new Date(ano, mes - 1, diaStr); // <-- horário locals
+        const diaInicio = new Date(Date.UTC(ano, mes - 1, diaStr, 0, 0, 0));
+        const diaFim = new Date(Date.UTC(ano, mes - 1, diaStr, 23, 59, 59, 999));
+        diaFim.setHours(23, 59, 59, 999);
+    
+        // Buscar reservas da sala nesse dia
+        const reservas = await this.reservasRepository.find({
+            where: {
+                sala: { id: salaId },
+                diaHoraInicio: Between(diaInicio, diaFim),
+            },
+        });
+    
+        const horariosReservados = reservas.map(r => ({
+            inicio: new Date(r.diaHoraInicio),
+            fim: new Date(r.diaHoraFim),
+        }));
+
+        const dataFormatada = data.slice(0, 10);
 
         // Verificar se existe exceção para essa data
         const excecao = await this.excecoesRepository.findOne({
-            where: { sala: { id: salaId }, data },
+            where: { sala: { id: salaId }, data: dataFormatada },
         });
-
+                    
         if (excecao) {
             if (excecao.indisponivel) return null;
-            return [{
-                horarioInicio: excecao.horarioInicio,
-                horarioFim: excecao.horarioFim,
-            }];
+    
+            const inicioExcecao = this.convertTimeToDate(excecao.horarioInicio, dia);
+            const fimExcecao = this.convertTimeToDate(excecao.horarioFim, dia);
+    
+            return this.calcularDisponibilidade(inicioExcecao, fimExcecao, horariosReservados);
         }
-
-        const diaDaSemana = new Date(data).getDay() + 1;  // Domingo = 1, Segunda = 2 ...
-
-        // Buscar as disponibilidades para a sala no dia da semana
-        const disponibilidade = await this.disponibilidadeRepository.find({
-            where: {
-                sala: { id: salaId },
-                diaDaSemana,
-            },
+    
+        // Se não houver exceção, usar disponibilidade padrão do dia da semana
+        const diaDaSemana = dia.getDay() + 1;
+        const disponibilidades = await this.disponibilidadeRepository.find({
+            where: { sala: { id: salaId }, diaDaSemana },
         });
-
-        // Buscar as reservas para a sala nesse dia
-        const reservas = await this.reservasRepository.find({
-            where: {
-                sala: sala,  // Passa a entidade sala completa
-            },
-            relations: ['horario'],
-        });
-
-        // Mapear as reservas para os horários de início e fim
-        const horariosReservados = reservas.map(r => ({
-            inicio: this.convertTimeToDate(r.horario.diaHoraInicio, new Date(data)),
-            fim: this.convertTimeToDate(r.horario.diaHoraFim, new Date(data)),
-        }));
-
-        // Divide os horários disponíveis de acordo com as reservas
+    
         const horariosDisponiveis: { horarioInicio: string, horarioFim: string }[] = [];
-
-        // Para cada disponibilidade, verificar se está ocupado
-        for (let d of disponibilidade) {
-            let inicioDisponivel = this.convertTimeToDate(d.horarioInicio, new Date(data));
-            const fimDisponivel = this.convertTimeToDate(d.horarioFim, new Date(data));
-
-            // Ordenar as reservas pelo horário de início
-            const reservasOrdenadas = horariosReservados
-                .filter(r => r.inicio < fimDisponivel && r.fim > inicioDisponivel) // apenas interseções
-                .sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
-
-            // Verificar se a disponibilidade está ocupada por algum horário reservado
-            for (const reserva of reservasOrdenadas) {
-                if (reserva.inicio > inicioDisponivel) {
-                    // Intervalo disponível antes da reserva
-                    horariosDisponiveis.push({
-                        horarioInicio: `${inicioDisponivel.getHours().toString().padStart(2, '0')}:${inicioDisponivel.getMinutes().toString().padStart(2, '0')}`,
-                        horarioFim: `${reserva.inicio.getHours().toString().padStart(2, '0')}:${reserva.inicio.getMinutes().toString().padStart(2, '0')}`,
-                    });
-                }
-
-                // Atualiza início para depois da reserva (máximo para evitar retrocessos)
-                inicioDisponivel = new Date(Math.max(inicioDisponivel.getTime(), reserva.fim.getTime()));
-            }
-
-            // Se sobrou um horário disponível depois da última reserva
-            if (inicioDisponivel < fimDisponivel) {
-                horariosDisponiveis.push({
-                    horarioInicio: `${inicioDisponivel.getHours().toString().padStart(2, '0')}:${inicioDisponivel.getMinutes().toString().padStart(2, '0')}`,
-                    horarioFim: `${fimDisponivel.getHours().toString().padStart(2, '0')}:${fimDisponivel.getMinutes().toString().padStart(2, '0')}`,
-                });
-            }
+    
+        for (const d of disponibilidades) {
+            const inicio = this.convertTimeToDate(d.horarioInicio, dia);
+            const fim = this.convertTimeToDate(d.horarioFim, dia);
+            const partes = this.calcularDisponibilidade(inicio, fim, horariosReservados);
+            horariosDisponiveis.push(...partes);
         }
-
+    
         return horariosDisponiveis;
     }
 
+    private calcularDisponibilidade(
+        inicio: Date,
+        fim: Date,
+        reservas: { inicio: Date, fim: Date }[],
+    ): { horarioInicio: string, horarioFim: string }[] {
+        const resultado: { horarioInicio: string, horarioFim: string }[] = [];
+    
+        const reservasOrdenadas = reservas
+            .filter(r => r.inicio < fim && r.fim > inicio) // interseções
+            .sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
+    
+        let inicioDisponivel = new Date(inicio);
+    
+        for (const reserva of reservasOrdenadas) {
+            if (reserva.inicio > inicioDisponivel) {
+                resultado.push({
+                    horarioInicio: this.formatarHora(inicioDisponivel),
+                    horarioFim: this.formatarHora(reserva.inicio),
+                });
+            }
+            inicioDisponivel = new Date(Math.max(inicioDisponivel.getTime(), reserva.fim.getTime()));
+        }
+    
+        if (inicioDisponivel < fim) {
+            resultado.push({
+                horarioInicio: this.formatarHora(inicioDisponivel),
+                horarioFim: this.formatarHora(fim),
+            });
+        }
+    
+        return resultado;
+    }
+    
+    private formatarHora(date: Date): string {
+        return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    }
+    
+    
     async findAll(): Promise<DisponibilidadeSalas[]> {
         return this.disponibilidadeRepository.find({ relations: ['sala'] });
     }

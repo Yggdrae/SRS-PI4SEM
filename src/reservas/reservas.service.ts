@@ -4,7 +4,6 @@ import { Reservas } from "./reservas.entity";
 import { Usuario } from 'src/usuarios/usuarios.entity';
 import { Salas } from 'src/salas/salas.entity';
 import { ReservasInterface } from "./interfaces/reservas.interface";
-import { HorariosSalas } from "src/horariosSalas/horariosSalas.entity";
 
 @Injectable()
 export class ReservasService {
@@ -18,9 +17,6 @@ export class ReservasService {
 
     @Inject('RESERVAS_REPOSITORY')
     private reservasRepository: Repository<Reservas>,
-
-    @Inject('HORARIOS_SALAS_REPOSITORY')
-    private horariosRepository: Repository<HorariosSalas>
   ) { }
 
   async getReservas(): Promise<Reservas[]> {
@@ -29,14 +25,11 @@ export class ReservasService {
 
   async getReservasFull(): Promise<Reservas[]> {
     return await this.reservasRepository.find({
-      relations: ['horario'],
+      relations: ['usuario', 'sala'],
     });
   }
 
   async createReserva(data: ReservasInterface): Promise<Reservas> {
-    // Buscar a entidade HorariosSalas pelo ID
-    const horario = await this.horariosRepository.findOneBy({ id: data.horario.id });
-    if (!horario) throw new BadRequestException('Horário não encontrado');
 
     // Buscar a entidade Usuario pelo ID
     const usuario = await this.usuariosRepository.findOne({ where: { id: data.usuario } });
@@ -50,7 +43,8 @@ export class ReservasService {
     const reserva = this.reservasRepository.create({
       usuario,
       sala,
-      horario,
+      diaHoraInicio: data.diaHoraInicio,
+      diaHoraFim: data.diaHoraFim,
       status: data.status,
       motivoCancelamento: data.motivoCancelamento,
     });
@@ -68,6 +62,13 @@ export class ReservasService {
     if (!data || Object.keys(data).length === 0) {
       throw new BadRequestException('Dados para atualização não informados');
     }
+
+    if (data.diaHoraInicio) reserva.diaHoraInicio = data.diaHoraInicio;
+    if (data.diaHoraFim) reserva.diaHoraFim = data.diaHoraFim;
+    if (data.status) reserva.status = data.status;
+    if (data.motivoCancelamento !== undefined) reserva.motivoCancelamento = data.motivoCancelamento;
+
+
 
     Object.assign(reserva, data);
     return await this.reservasRepository.save(reserva);

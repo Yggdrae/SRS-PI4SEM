@@ -34,5 +34,10 @@ export class SalasController {
     getSalasDestaque(): Promise<Salas[]> {
         return this.salasService.getSalasDestaque();
     }
+    @Get(':id')
+    getSalaById(@Param('id', ParseIntPipe) id: number): Promise<Salas> {
+        return this.salasService.getSalaById(id);
+    }
+
 
 }

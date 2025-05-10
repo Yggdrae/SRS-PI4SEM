@@ -1,7 +1,8 @@
 export interface ReservasInterface {
     usuario: number;
     sala: number;
-    horario: { id: number };
+    diaHoraInicio: Date;
+    diaHoraFim: Date;
     status: string;
     motivoCancelamento: string;
 }
