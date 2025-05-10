@@ -43,7 +43,7 @@ describe('ReservasController', () => {
   });
 
   it('should create a reserva', async () => {
-    const dto = { usuario: 1, sala: 1, diaHoraInicio: new Date(), diaHoraFim: new Date(), status: 'ativo', motivoCancelamento: null };
+    const dto = { usuario: 1, sala: 1, diaHoraInicio: new Date(), diaHoraFim: new Date(), status: 'ativo', motivoCancelamento: '' };
     const expected = { id: 1, ...dto };
     mockService.createReserva.mockResolvedValue(expected);
 

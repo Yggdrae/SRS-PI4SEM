@@ -60,7 +60,7 @@ describe('ReservasService', () => {
       diaHoraInicio: new Date(),
       diaHoraFim: new Date(),
       status: 'ativo',
-      motivoCancelamento: null,
+      motivoCancelamento: '',
     };
 
     mockReservasRepo.create.mockReturnValue(dto);
