@@ -8,10 +8,11 @@ import { AuthModule } from './auth/auth.module';
 import { DisponibilidadeSalasModule } from './disponibilidadeSalas/disponibilidadeSalas.module';
 import { DatabaseModule } from "./db/database.module";
 import { CartoesModule } from "./cartoes/cartoes.module";
+import { PagamentosModule } from "./pagamentos/pagamentos.module";
 
 
 @Module({
-    imports: [DatabaseModule, RecursosModule, ReservasModule, SalasModule, SalasRecursosModule, UsuariosModule, AuthModule, DisponibilidadeSalasModule, CartoesModule]
+    imports: [DatabaseModule, RecursosModule, ReservasModule, SalasModule, SalasRecursosModule, UsuariosModule, AuthModule, DisponibilidadeSalasModule, CartoesModule, PagamentosModule]
 })
 
 export class AppModule { };
