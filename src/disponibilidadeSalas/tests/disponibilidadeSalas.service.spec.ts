@@ -1,60 +1,69 @@
-/*import { Test, TestingModule } from '@nestjs/testing';
+
+import { Test, TestingModule } from '@nestjs/testing';
 import { DisponibilidadeSalasService } from '../disponibilidadeSalas.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { DisponibilidadeSalas } from '../disponibilidadeSalas.entity';
-import { Repository } from 'typeorm';
+import { Salas } from 'src/salas/salas.entity';
+import { ExcecoesDisponibilidade } from 'src/excecoesDisponibilidade/excecoesDisponibilidade.entity';
+import { Reservas } from 'src/reservas/reservas.entity';
+import { NotFoundException } from '@nestjs/common';
 
 describe('DisponibilidadeSalasService', () => {
-    let service: DisponibilidadeSalasService;
-    let repo: Repository<DisponibilidadeSalas>;
+  let service: DisponibilidadeSalasService;
 
-    const mockDisponibilidade: DisponibilidadeSalas = {
-        id: 1,
-        data: '2025-05-01',
-        horarioInicio: '09:00',
-        horarioFim: '12:00',
-        sala: { id: 1 } as any,
-    };
+  const mockRepo = {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    create: jest.fn(),
+    save: jest.fn(),
+    delete: jest.fn(),
+  };
 
-    const mockRepo = {
-        find: jest.fn().mockResolvedValue([mockDisponibilidade]),
-        findOne: jest.fn().mockResolvedValue(mockDisponibilidade),
-        create: jest.fn().mockImplementation(dto => dto),
-        save: jest.fn().mockImplementation(dto => Promise.resolve({ id: 1, ...dto })),
-        delete: jest.fn().mockResolvedValue({ affected: 1 }),
-    };
+  const mockSalaRepo = { findOne: jest.fn() };
+  const mockExcecaoRepo = { findOne: jest.fn() };
+  const mockReservaRepo = { find: jest.fn() };
 
-    beforeEach(async () => {
-        const module: TestingModule = await Test.createTestingModule({
-            providers: [
-                DisponibilidadeSalasService,
-                {
-                    provide: getRepositoryToken(DisponibilidadeSalas),
-                    useValue: mockRepo,
-                },
-            ],
-        }).compile();
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        DisponibilidadeSalasService,
+        { provide: 'DISPONIBILIDADESALAS_REPOSITORY', useValue: mockRepo },
+        { provide: 'SALAS_REPOSITORY', useValue: mockSalaRepo },
+        { provide: 'EXCECOESDISPONIBILIDADE_REPOSITORY', useValue: mockExcecaoRepo },
+        { provide: 'RESERVAS_REPOSITORY', useValue: mockReservaRepo },
+      ],
+    }).compile();
 
-        service = module.get<DisponibilidadeSalasService>(DisponibilidadeSalasService);
-        repo = module.get<Repository<DisponibilidadeSalas>>(getRepositoryToken(DisponibilidadeSalas));
-    });
+    service = module.get<DisponibilidadeSalasService>(DisponibilidadeSalasService);
+  });
 
-    it('deve retornar todas as disponibilidades', async () => {
-        const result = await service.findAll();
-        expect(result).toEqual([mockDisponibilidade]);
-    });
+  it('should be defined', () => {
+    expect(service).toBeDefined();
+  });
 
-    it('deve criar uma disponibilidade', async () => {
-        const dto = {
-            data: '2025-05-01',
-            horarioInicio: '09:00',
-            horarioFim: '12:00',
-            salaId: 1,
-        };
-        
-        const result = await service.create(dto);
-        expect(result).toHaveProperty('id');
-        expect(repo.create).toHaveBeenCalledWith(dto);
-        expect(repo.save).toHaveBeenCalled();
-    });
+  it('should return all disponibilidades', async () => {
+    const result = [{ id: 1 }];
+    mockRepo.find.mockResolvedValue(result);
+    expect(await service.findAll()).toEqual(result);
+  });
+
+  it('should throw when creating for non-existent sala', async () => {
+    mockSalaRepo.findOne.mockResolvedValue(null);
+    await expect(service.create({
+      salaId: 99,
+      diaDaSemana: 2,
+      horarioInicio: '08:00',
+      horarioFim: '10:00'
+    })).rejects.toThrow(NotFoundException);
+  });
+
+  it('should delete a disponibilidade', async () => {
+    mockRepo.delete.mockResolvedValue({ affected: 1 });
+    await expect(service.delete(1)).resolves.toBeUndefined();
+  });
+
+  it('should throw if delete finds nothing', async () => {
+    mockRepo.delete.mockResolvedValue({ affected: 0 });
+    await expect(service.delete(999)).rejects.toThrow(NotFoundException);
+  });
 });
