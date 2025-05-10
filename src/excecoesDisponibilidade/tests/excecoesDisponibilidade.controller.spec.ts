@@ -39,7 +39,15 @@ describe('ExcecoesDisponibilidadeController', () => {
   });
 
   it('should create an excecao', async () => {
-    const dto = { sala: 1, dataInicio: new Date(), dataFim: new Date(), motivo: 'manutenção' };
+    const dto = {
+      salaId: 1,
+      data: '2022-01-01',
+      indisponivel: false,
+      horarioInicio: '08:00',
+      horarioFim: '09:00',
+      motivo: 'manutenção',
+    };
+
     const result = { id: 1, ...dto };
 
     mockService.create.mockResolvedValue(result);

@@ -1,6 +1,6 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { PagamentosService } from '../pagamentos.service';
+import { PagamentosService } from '../../pagamentos/pagamentos.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Cartao } from 'src/cartoes/cartoes.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';

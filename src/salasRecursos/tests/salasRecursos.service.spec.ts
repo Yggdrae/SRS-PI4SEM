@@ -49,7 +49,7 @@ describe('SalasRecursosService', () => {
   });
 
   it('should throw if required fields missing on create', async () => {
-    await expect(service.createSalasRecursos({ sala: null, recurso: null, quantidade: null }))
+    await expect(service.createSalasRecursos({}as any))
       .rejects.toThrow(BadRequestException);
   });
 

@@ -66,8 +66,9 @@ describe('SalasService', () => {
   });
 
   it('should throw if required fields are missing in create', async () => {
-    await expect(service.createSalas({ numero: null, andar: null, valorHora: null, isDestaque: false }))
-      .rejects.toThrow(BadRequestException);
+    await expect(service.createSalas({ 
+isDestaque: false
+    }as any)).rejects.toThrow(BadRequestException);
   });
 
   it('should update a sala', async () => {

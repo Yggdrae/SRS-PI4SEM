@@ -60,7 +60,7 @@ describe('SalasImagensService', () => {
   });
 
   it('should throw if creating imagem with missing data', async () => {
-    await expect(service.createImagem({ sala: null, imagem: null })).rejects.toThrow(BadRequestException);
+    await expect(service.createImagem({} as any)).rejects.toThrow(BadRequestException);
   });
 
   it('should delete imagem', async () => {

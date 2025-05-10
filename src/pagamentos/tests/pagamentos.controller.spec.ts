@@ -1,7 +1,7 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { PagamentosController } from '../pagamentos.controller';
-import { PagamentosService } from '../pagamentos.service';
+import { PagamentosController } from '../../pagamentos/pagamentos.controller';
+import { PagamentosService } from '../../pagamentos/pagamentos.service';
 import { CreatePagamentoDTO } from '../dto/create-pagamento.dto';
 
 describe('PagamentosController', () => {
