@@ -2,7 +2,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UsuariosService } from '../usuarios.service';
 import { Usuario } from '../usuarios.entity';
 import { Repository } from 'typeorm';
-import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 
 describe('UsuariosService', () => {
@@ -44,6 +43,8 @@ describe('UsuariosService', () => {
                 senha: 'hash',
                 criadoEm: new Date(),
                 tipo: 'admin',
+                reservas: [],
+                cartoes: [],
             },
         ];
         mockRepository.find.mockResolvedValue(usuarios);
