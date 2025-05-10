@@ -38,6 +38,9 @@ describe('UsuariosController', () => {
                 senha: 'senhaHash',
                 criadoEm: new Date(),
                 tipo: 'admin',
+                reservas: [],
+                cartoes: [],
+
             },
         ];
         mockUsuariosService.getUsuarios.mockResolvedValue(usuarios);
@@ -58,6 +61,8 @@ describe('UsuariosController', () => {
             ...dto,
             senha: 'senhaHasheada',
             criadoEm: new Date(),
+            reservas: [],
+            cartoes: [],
         };
 
         mockUsuariosService.createUsuarios.mockResolvedValue(usuarioCriado);
@@ -74,6 +79,9 @@ describe('UsuariosController', () => {
             senha: 'senhaHash',
             criadoEm: new Date(),
             tipo: 'admin',
+            reservas: [],
+            cartoes: [],
+
         };
 
         mockUsuariosService.updateUsuarios.mockResolvedValue(usuarioAtualizado);
