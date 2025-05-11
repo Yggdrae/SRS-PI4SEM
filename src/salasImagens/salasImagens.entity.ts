@@ -6,14 +6,18 @@ export class SalasImagens {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Salas, (sala) => sala.id)
+  @ManyToOne(() => Salas)
   sala: Salas;
-  
+
   @Column({ type: 'bytea' }) // blob no PostgreSQL
   imagem: Buffer;
 
   @Column()
   nomeArquivo: string;
+
+  @Column()
+  tipoMime: string;
+
 
   @Column({ nullable: true })
   descricao?: string;
