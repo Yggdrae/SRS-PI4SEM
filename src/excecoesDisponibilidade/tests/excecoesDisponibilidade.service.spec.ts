@@ -3,11 +3,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExcecoesDisponibilidadeService } from '../excecoesDisponibilidade.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { ExcecoesDisponibilidade } from '../excecoesDisponibilidade.entity';
-import { Repository } from 'typeorm';
+import { getRepository, Repository } from 'typeorm';
 import { Salas } from 'src/salas/salas.entity';
 
 describe('ExcecoesDisponibilidadeService', () => {
   let service: ExcecoesDisponibilidadeService;
+  let repository: Repository<ExcecoesDisponibilidade>;
   let salasRepository: Repository<Salas>;
 
   const mockSala = { id: 1 };
@@ -17,27 +18,31 @@ describe('ExcecoesDisponibilidadeService', () => {
     findOne: jest.fn(),
     save: jest.fn(),
     delete: jest.fn(),
+    create: jest.fn().mockImplementation((dto) => dto),
+
   };
   const mockSalasRepository = {
     findOne: jest.fn().mockResolvedValue(mockSala),
   };
-  
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ExcecoesDisponibilidadeService,
         {
-          provide: 'EXCECOESDISPONIBILIDADE_REPOSITORY',
+          provide: getRepositoryToken(ExcecoesDisponibilidade),
           useValue: mockRepository,
         },
         {
-          provide: 'SALAS_REPOSITORY',
+          provide: getRepositoryToken(Salas),
           useValue: mockSalasRepository,
         },
       ],
     }).compile();
 
     service = module.get<ExcecoesDisponibilidadeService>(ExcecoesDisponibilidadeService);
+    repository = module.get(getRepositoryToken(ExcecoesDisponibilidade));
+    salasRepository = module.get(getRepositoryToken(Salas));
   });
 
   it('should be defined', () => {
@@ -52,11 +57,18 @@ describe('ExcecoesDisponibilidadeService', () => {
   });
 
   it('should create an excecao', async () => {
-    const dto = { salaId: 1, data: '2022-01-01', indisponivel: false, horarioInicio: '08:00', horarioFim: '09:00', motivo: 'manutenção' };
-    const result = { id: 1, ...dto };
+    const dto = {
+      salaId: 1,
+      data: '2022-01-01',
+      indisponivel: false,
+      horarioInicio: '08:00',
+      horarioFim: '09:00',
+      motivo: 'manutenção'
+    };
+    const result = {...dto, sala : mockSala}
 
     mockRepository.save.mockResolvedValue(result);
-
+    
     expect(await service.create(dto)).toEqual(result);
   });
 

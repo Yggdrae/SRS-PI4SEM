@@ -8,7 +8,7 @@ describe('ExcecoesDisponibilidadeController', () => {
   let service: ExcecoesDisponibilidadeService;
 
   const mockService = {
-    getAll: jest.fn(),
+    findAll: jest.fn(),
     create: jest.fn(),
     delete: jest.fn(),
   };
@@ -33,7 +33,7 @@ describe('ExcecoesDisponibilidadeController', () => {
 
   it('should return all excecoes', async () => {
     const result = [{ id: 1 }];
-    mockService.getAll.mockResolvedValue(result);
+    mockService.findAll.mockResolvedValue(result);
 
     expect(await controller.getAll()).toEqual(result);
   });
