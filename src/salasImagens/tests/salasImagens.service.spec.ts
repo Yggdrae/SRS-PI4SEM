@@ -1,12 +1,13 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { SalasImagensService } from '../salasImagens.service';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { SalasImagens } from '../salasImagens.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('SalasImagensService', () => {
   let service: SalasImagensService;
+
+  const mockSalasRepository = {
+    findOne: jest.fn(),
+  };
 
   const mockRepository = {
     find: jest.fn(),
@@ -24,6 +25,10 @@ describe('SalasImagensService', () => {
           provide: 'SALASIMAGENS_REPOSITORY',
           useValue: mockRepository,
         },
+        {
+          provide: 'SALAS_REPOSITORY',
+          useValue: mockSalasRepository,
+        }
       ],
     }).compile();
 
@@ -54,6 +59,10 @@ describe('SalasImagensService', () => {
   it('should create imagem', async () => {
     const dto = { sala: 1, imagem: Buffer.from('img'), nomeArquivo: 'foto.png', tipoMime: 'image/png' };
     const entity = { id: 1, ...dto };
+
+    // Mock para a sala, garantindo que a sala com ID 1 será encontrada
+    mockSalasRepository.findOne.mockResolvedValue({ id: 1 });
+
     mockRepository.create.mockReturnValue(entity);
     mockRepository.save.mockResolvedValue(entity);
     expect(await service.createImagem(dto)).toEqual(entity);

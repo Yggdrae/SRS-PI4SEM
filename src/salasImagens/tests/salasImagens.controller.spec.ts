@@ -48,7 +48,7 @@ describe('SalasImagensController', () => {
     const dto = { sala: 1, imagem: Buffer.from('img'), nomeArquivo: 'foto.png', tipoMime: 'image/png' };
     const result = { id: 1, ...dto };
     mockService.createImagem.mockResolvedValue(result);
-    expect(await controller.createImagem(dto)).toEqual(result);
+    expect(await controller.createImagem(dto, '1')).toEqual(result);
   });
 
   it('should delete imagem', async () => {
