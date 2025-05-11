@@ -9,10 +9,25 @@ import { DisponibilidadeSalasModule } from './disponibilidadeSalas/disponibilida
 import { DatabaseModule } from "./db/database.module";
 import { CartoesModule } from "./cartoes/cartoes.module";
 import { PagamentosModule } from "./pagamentos/pagamentos.module";
+import { ExcecoesDisponibilidadeModule } from "./excecoesDisponibilidade/excecoesDisponibilidade.module";
+import { SalasImagensModule } from "./salasImagens/salasImagens.module";
 
 
 @Module({
-    imports: [DatabaseModule, RecursosModule, ReservasModule, SalasModule, SalasRecursosModule, UsuariosModule, AuthModule, DisponibilidadeSalasModule, CartoesModule, PagamentosModule]
+    imports: [
+        DatabaseModule, 
+        RecursosModule, 
+        ReservasModule, 
+        SalasModule, 
+        SalasRecursosModule, 
+        UsuariosModule, 
+        AuthModule, 
+        DisponibilidadeSalasModule, 
+        CartoesModule, 
+        PagamentosModule, 
+        ExcecoesDisponibilidadeModule,
+        SalasImagensModule
+    ],
 })
 
 export class AppModule { };
