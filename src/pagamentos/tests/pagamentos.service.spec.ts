@@ -47,7 +47,7 @@ describe('PagamentosService', () => {
   it('should return payment result if cartao is found', async () => {
     mockCartoesRepository.findOne.mockResolvedValue({ id: 1 });
 
-    const dto = { valor: 100, metodo: 'cartao', usuarioId: 1, cartaoId: 1 };
+    const dto = { valor: 100, metodo: 'cartao' as 'cartao', usuarioId: 1, cartaoId: 1 };
     const result = await service.processarPagamento(dto);
 
     expect(result).toHaveProperty('status');
