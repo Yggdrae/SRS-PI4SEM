@@ -1,8 +1,15 @@
+// src/usuarios/usuarios.service.ts
 import * as bcrypt from 'bcrypt';
-import { Inject, Injectable, NotFoundException, ConflictException, BadRequestException } from "@nestjs/common";
-import { Repository } from "typeorm";
-import { Usuario } from "./usuarios.entity";
-import { createUserDTO } from "./dto/usuarios.dto";
+import {
+  Inject,
+  Injectable,
+  NotFoundException,
+  ConflictException,
+  BadRequestException,
+} from '@nestjs/common';
+import { Repository } from 'typeorm';
+import { Usuario } from './usuarios.entity';
+import { createUserDTO } from './dto/usuarios.dto';
 
 @Injectable()
 export class UsuariosService {
@@ -13,6 +20,11 @@ export class UsuariosService {
 
   async getUsuarios(): Promise<Usuario[]> {
     return await this.usuariosRepository.find();
+  }
+
+  async getUsuarioById(id: number): Promise<Usuario | null> {
+    const usuario = await this.usuariosRepository.findOne({ where: { id } });
+    return usuario || null;
   }
 
   async createUsuarios(createUserDTO: createUserDTO) {
@@ -37,7 +49,10 @@ export class UsuariosService {
     }
   }
 
-  async updateUsuarios(id: number, updateData: Partial<createUserDTO>): Promise<Usuario> {
+  async updateUsuarios(
+    id: number,
+    updateData: Partial<createUserDTO>,
+  ): Promise<Usuario> {
     const usuario = await this.usuariosRepository.findOne({ where: { id } });
 
     if (!usuario) {
