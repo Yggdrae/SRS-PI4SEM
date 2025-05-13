@@ -4,6 +4,7 @@ import { SalasImagensController } from './salasImagens.controller';
 import { SalasImagensService } from './salasImagens.service';
 import { salasImagensProviders } from './salasImagens.providers';
 
+
 @Module({
   imports: [DatabaseModule],
   controllers: [SalasImagensController],

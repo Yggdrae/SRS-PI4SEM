@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseIntPipe, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { SalasImagensService } from './salasImagens.service';
 import { SalasImagensInterface } from './interfaces/salasImagens.interface';
 import { SalasImagens } from './salasImagens.entity';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('salas_imagens')
 export class SalasImagensController {
-  constructor(private readonly salasImagensService: SalasImagensService) {}
+  constructor(private readonly salasImagensService: SalasImagensService) { }
 
   @Get()
   getImagens(): Promise<SalasImagens[]> {
@@ -18,8 +19,21 @@ export class SalasImagensController {
   }
 
   @Post()
-  createImagem(@Body() data: SalasImagensInterface): Promise<SalasImagens> {
-    return this.salasImagensService.createImagem(data);
+  @UseInterceptors(FileInterceptor('imagem')) // <- isso permite receber arquivos
+  async createImagem(
+    @UploadedFile() file: any,
+    @Body('salaId') salaId: string,
+  ): Promise<SalasImagens> {
+    if (!file || !salaId) {
+      throw new BadRequestException('Dados obrigatórios (sala e imagem) devem ser informados');
+    }
+
+    return this.salasImagensService.createImagem({
+      sala: parseInt(salaId),
+      imagem: file.buffer,
+      nomeArquivo: file.originalname,
+      tipoMime: file.mimetype,
+    });
   }
 
   @Delete(':id')
