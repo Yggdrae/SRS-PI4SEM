@@ -10,7 +10,7 @@ export class AuthService {
   constructor(
     @Inject('USUARIOS_REPOSITORY')
     private usuariosRepository: Repository<Usuario>,
-    private jwtService: JwtService, // injeta aqui
+    private jwtService: JwtService,
   ) { }
 
   async login({ email, senha }: LoginDTO) {
