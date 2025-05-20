@@ -7,6 +7,9 @@ export class Salas {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @Column({ nullable: true })
+  endereco: string;
+
   @OneToMany(() => Reservas, reserva => reserva.sala)
   reservas: Reservas[];
 
@@ -15,6 +18,9 @@ export class Salas {
 
   @Column()
   andar: number;
+
+  @Column({ nullable: true })
+  capacidade: number;
 
   @Column('decimal', { precision: 10, scale: 2 })
   valorHora: number;
