@@ -11,6 +11,10 @@ export class SalasController {
     getSalas(): Promise<Salas[]> {
         return this.salasService.getSalas();
     }
+    @Get('full')
+    getSalasFull(): Promise<Salas[]> {
+        return this.salasService.getSalasFull();
+    }
 
     @Post()
     createSalas(@Body() data: SalasInterface): Promise<Salas> {
@@ -37,6 +41,10 @@ export class SalasController {
     @Get(':id')
     getSalaById(@Param('id', ParseIntPipe) id: number): Promise<Salas> {
         return this.salasService.getSalaById(id);
+    }
+    @Get('/full/:id')
+    getSalaFullById(@Param('id', ParseIntPipe) id: number): Promise<Salas> {
+        return this.salasService.getSalaFullById(id);
     }
 
 

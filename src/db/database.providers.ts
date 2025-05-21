@@ -5,7 +5,7 @@ export const AppDataSource = new DataSource({
   host: 'localhost',
   port: 5432,
   username: 'postgres',
-  password: '272574',
+  password: '1234',
   database: 'SRS-PI4SEM',
   entities: [__dirname + '/../**/*.entity{.ts,.js}'],
   synchronize: true,

@@ -14,6 +14,10 @@ export class SalasService {
         return await this.salasRepository.find();
     }
 
+    async getSalasFull(): Promise<Salas[]> {
+        return await this.salasRepository.find({relations:['salasRecursos','salasRecursos.recurso', 'salasImagens', 'disponibilidades']});
+    }
+
     async createSalas(data: SalasInterface): Promise<Salas> {
         if (!data.numero || !data.andar || data.valorHora === undefined) {
             throw new BadRequestException('Dados obrigatórios (número, andar, valorHora) não fornecidos');
@@ -52,7 +56,16 @@ export class SalasService {
         }
         return sala;
     }
-    
+
+    async getSalaFullById(id: number): Promise<Salas> {
+        const sala = await this.salasRepository.findOne({ where: { id }, relations:['salasRecursos', 'salasRecursos.recurso', 'imagens'] });
+        if (!sala) {
+            throw new NotFoundException(`Sala com ID ${id} não encontrada`);
+        }
+        return sala;
+    }
+
+
 
     async getSalasDestaque(): Promise<Salas[]> {
         return await this.salasRepository.find({
