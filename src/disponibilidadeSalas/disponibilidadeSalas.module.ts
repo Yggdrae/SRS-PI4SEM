@@ -14,7 +14,7 @@ import { DataSource } from 'typeorm';
 
 
 @Module({
-    imports: [DatabaseModule], // <-- Adicione esta linha
+    imports: [DatabaseModule],
     controllers: [DisponibilidadeSalasController],
     providers: [
       DisponibilidadeSalasService,

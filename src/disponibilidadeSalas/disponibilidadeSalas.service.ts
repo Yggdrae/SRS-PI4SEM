@@ -43,7 +43,7 @@ export class DisponibilidadeSalasService {
         if (!sala) throw new NotFoundException('Sala não encontrada');
     
         const [ano, mes, diaStr] = data.split('-').map(Number);
-        const dia = new Date(ano, mes - 1, diaStr); // <-- horário locals
+        const dia = new Date(ano, mes - 1, diaStr);
         const diaInicio = new Date(Date.UTC(ano, mes - 1, diaStr, 0, 0, 0));
         const diaFim = new Date(Date.UTC(ano, mes - 1, diaStr, 23, 59, 59, 999));
         diaFim.setHours(23, 59, 59, 999);
@@ -63,7 +63,7 @@ export class DisponibilidadeSalasService {
 
         const dataFormatada = data.slice(0, 10);
 
-        // Verificar se existe exceção para essa data
+        // Verifica se existe exceção para essa data
         const excecao = await this.excecoesRepository.findOne({
             where: { sala: { id: salaId }, data: dataFormatada },
         });
@@ -77,7 +77,7 @@ export class DisponibilidadeSalasService {
             return this.calcularDisponibilidade(inicioExcecao, fimExcecao, horariosReservados);
         }
     
-        // Se não houver exceção, usar disponibilidade padrão do dia da semana
+        // Se não houver exceção, usa disponibilidade padrão do dia da semana
         const diaDaSemana = dia.getDay() + 1;
         const disponibilidades = await this.disponibilidadeRepository.find({
             where: { sala: { id: salaId }, diaDaSemana },
@@ -103,7 +103,7 @@ export class DisponibilidadeSalasService {
         const resultado: { horarioInicio: string, horarioFim: string }[] = [];
     
         const reservasOrdenadas = reservas
-            .filter(r => r.inicio < fim && r.fim > inicio) // interseções
+            .filter(r => r.inicio < fim && r.fim > inicio)
             .sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
     
         let inicioDisponivel = new Date(inicio);
