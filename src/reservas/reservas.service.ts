@@ -31,15 +31,15 @@ export class ReservasService {
 
   async createReserva(data: ReservasInterface): Promise<Reservas> {
 
-    // Buscar a entidade Usuario pelo ID
+    // Busca a entidade Usuario pelo ID
     const usuario = await this.usuariosRepository.findOne({ where: { id: data.usuario } });
     if (!usuario) throw new BadRequestException('Usuário não encontrado');
 
-    // Buscar a entidade Salas pelo ID
+    // Busca a entidade Salas pelo ID
     const sala = await this.salasRepository.findOne({ where: { id: data.sala } });
     if (!sala) throw new BadRequestException('Sala não encontrada');
 
-    // Criar a reserva associando as entidades encontradas
+    // Cria a reserva associando as entidades encontradas
     const reserva = this.reservasRepository.create({
       usuario,
       sala,
@@ -49,7 +49,7 @@ export class ReservasService {
       motivoCancelamento: data.motivoCancelamento,
     });
 
-    // Salvar a reserva no banco de dados
+    // Salva a reserva no banco de dados
     return await this.reservasRepository.save(reserva);
   }
 

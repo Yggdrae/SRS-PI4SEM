@@ -1,4 +1,3 @@
-// src/usuarios/usuarios.service.ts
 import * as bcrypt from 'bcrypt';
 import {
   Inject,
@@ -16,7 +15,7 @@ export class UsuariosService {
   constructor(
     @Inject('USUARIOS_REPOSITORY')
     private usuariosRepository: Repository<Usuario>,
-  ) {}
+  ) { }
 
   async getUsuarios(): Promise<Usuario[]> {
     return await this.usuariosRepository.find();

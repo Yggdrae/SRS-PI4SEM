@@ -19,7 +19,7 @@ export class SalasImagensController {
   }
 
   @Post()
-  @UseInterceptors(FileInterceptor('imagem')) // <- isso permite receber arquivos
+  @UseInterceptors(FileInterceptor('imagem')) // permite receber arquivos
   async createImagem(
     @UploadedFile() file: any,
     @Body('salaId') salaId: string,

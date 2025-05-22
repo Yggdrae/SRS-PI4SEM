@@ -22,7 +22,7 @@ export class UsuariosController {
     return this.usuariosService.getUsuarios();
   }
 
-  @Get('/:id') // Nova rota para buscar usuário por ID
+  @Get('/:id')
   async getUsuarioById(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<Usuario> {
