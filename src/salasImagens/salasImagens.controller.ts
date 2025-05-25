@@ -3,18 +3,19 @@ import { SalasImagensService } from './salasImagens.service';
 import { SalasImagensInterface } from './interfaces/salasImagens.interface';
 import { SalasImagens } from './salasImagens.entity';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { SalasImagensDto } from './dto/salasImagens.dto';
 
 @Controller('salas_imagens')
 export class SalasImagensController {
   constructor(private readonly salasImagensService: SalasImagensService) { }
 
   @Get()
-  getImagens(): Promise<SalasImagens[]> {
+  getImagens(): Promise<SalasImagensDto[]> {
     return this.salasImagensService.getImagens();
   }
 
   @Get(':id')
-  getImagemById(@Param('id', ParseIntPipe) id: number): Promise<SalasImagens> {
+  getImagemById(@Param('id', ParseIntPipe) id: number): Promise<SalasImagensDto> {
     return this.salasImagensService.getImagemById(id);
   }
 

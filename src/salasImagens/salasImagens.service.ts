@@ -3,6 +3,7 @@ import { Repository } from 'typeorm';
 import { SalasImagens } from './salasImagens.entity';
 import { SalasImagensInterface } from './interfaces/salasImagens.interface';
 import { Salas } from 'src/salas/salas.entity';
+import { SalasImagensDto } from './dto/salasImagens.dto';
 
 @Injectable()
 export class SalasImagensService {
@@ -13,13 +14,24 @@ export class SalasImagensService {
     private salasRepository: Repository<Salas>,
   ) { }
 
-  async getImagens(): Promise<SalasImagens[]> {
-    return await this.salasImagensRepository.find({
-      relations: ['sala'],
-    });
+  private toDto(entity: SalasImagens): SalasImagensDto {
+    return {
+      id: entity.id,
+      salaId: entity.sala.id,
+      nomeArquivo: entity.nomeArquivo,
+      tipoMime: entity.tipoMime,
+      imagemBase64: `data:${entity.tipoMime};base64,${entity.imagem.toString('base64')}`,
+    }
   }
 
-  async getImagemById(id: number): Promise<SalasImagens> {
+  async getImagens(): Promise<SalasImagensDto[]> {
+    const imagens = await this.salasImagensRepository.find({
+      relations: ['sala'],
+    });
+    return imagens.map(this.toDto);
+  }
+
+  async getImagemById(id: number): Promise<SalasImagensDto> {
     const imagem = await this.salasImagensRepository.findOne({
       where: { id },
       relations: ['sala'],
@@ -27,7 +39,7 @@ export class SalasImagensService {
     if (!imagem) {
       throw new NotFoundException(`Imagem com ID ${id} não encontrada`);
     }
-    return imagem;
+    return this.toDto(imagem);
   }
 
   async createImagem(data: SalasImagensInterface): Promise<SalasImagens> {
