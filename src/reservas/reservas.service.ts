@@ -29,6 +29,19 @@ export class ReservasService {
     });
   }
 
+  async getReservasByUsuarioId(usuarioId: number): Promise<Reservas[]> {
+    const usuario = await this.usuariosRepository.findOne({ where: { id: usuarioId } });
+    if (!usuario) {
+      throw new NotFoundException(`Usuário com ID ${usuarioId} não encontrado`);
+    }
+
+    return await this.reservasRepository.find({
+      where: { usuario: { id: usuarioId } },
+      relations: ['usuario', 'sala'],
+    });
+  }
+
+
   async createReserva(data: ReservasInterface): Promise<Reservas> {
 
     // Busca a entidade Usuario pelo ID

@@ -17,6 +17,11 @@ export class ReservasController {
         return this.reservasService.getReservasFull();
     }
 
+    @Get('usuario/:usuarioId')
+    getReservasByUsuarioId(@Param('usuarioId',ParseIntPipe)usuarioId: number): Promise<Reservas[]> {
+        return this.reservasService.getReservasByUsuarioId(usuarioId);
+    }
+
     @Post()
     createReserva(@Body() data: ReservasInterface): Promise<Reservas> {
         return this.reservasService.createReserva(data);
