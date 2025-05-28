@@ -15,6 +15,12 @@ function encrypt(text: string): string {
     return `${iv.toString('hex')}:${encrypted.toString('hex')}`;
 }
 
+function gerarToken(data: { nome: string; numero: string; cvv: string; validade: string }): string {
+    const payload = `${data.nome}|${data.numero}|${data.cvv}|${data.validade}`;
+    return encrypt(payload);
+}
+
+
 @Injectable()
 export class CartoesService {
     constructor(
@@ -23,11 +29,19 @@ export class CartoesService {
     ) { }
 
     async create(data: CreateCartaoDTO): Promise<Cartao> {
+        const ultimosDigitos = data.numero.slice(-4);
+        const token = gerarToken({
+            nome: data.nomeTitular,
+            numero: data.numero,
+            cvv: data.cvv,
+            validade: data.validade
+        });
+
         const cartao = this.cartoesRepository.create({
-            numeroCriptografado: encrypt(data.numero),
-            nomeCriptografado: encrypt(data.nomeTitular),
-            validadeCriptografada: encrypt(data.validade),
-            cvvCriptografado: encrypt(data.cvv),
+            ultimosDigitos: ultimosDigitos,
+            validade: data.validade,
+            bandeira: data.bandeira,
+            token: token,
             usuario: { id: data.usuarioId }
         });
 

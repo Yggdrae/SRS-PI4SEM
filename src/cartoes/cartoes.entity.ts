@@ -10,16 +10,16 @@ export class Cartao {
     usuario: Usuario;
 
     @Column()
-    numeroCriptografado: string;
+    ultimosDigitos: string;
 
     @Column()
-    nomeCriptografado: string;
+    validade: string;
 
     @Column()
-    validadeCriptografada: string;
+    bandeira: string;
 
     @Column()
-    cvvCriptografado: string;
+    token: string;
 
     @Column({ default: false })
     favorito: boolean;

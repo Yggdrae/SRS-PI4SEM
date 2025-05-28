@@ -3,5 +3,6 @@ export class CreateCartaoDTO {
   nomeTitular: string;
   validade: string;
   cvv: string;
+  bandeira: string;
   usuarioId: number;
 }

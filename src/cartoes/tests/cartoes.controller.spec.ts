@@ -38,6 +38,7 @@ describe('CartoesController', () => {
       nomeTitular: 'Fulano',
       validade: '12/30',
       cvv: '123',
+      bandeira: 'Mastercard',
       usuarioId: 1,
     };
 

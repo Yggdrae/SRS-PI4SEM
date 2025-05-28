@@ -41,6 +41,7 @@ describe('CartoesService', () => {
       nomeTitular: 'Fulano',
       validade: '12/30',
       cvv: '123',
+      bandeira: 'Mastecard',
       usuarioId: 1,
     };
 
