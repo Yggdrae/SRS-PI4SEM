@@ -10,7 +10,7 @@ export class Reservas {
 
     @ManyToOne(() => Usuario, usuario => usuario.reservas)
     usuario: Usuario;
-    
+
     @ManyToOne(() => Salas, sala => sala.reservas)
     sala: Salas;
 
@@ -19,10 +19,14 @@ export class Reservas {
 
     @Column()
     diaHoraFim: Date;
-    
+
     @Column()
     status: string;
 
     @Column({ nullable: true })
     motivoCancelamento: string;
+
+    @Column('decimal', { precision: 10, scale: 2 })
+    valorHoraNaReserva: number;
+
 }

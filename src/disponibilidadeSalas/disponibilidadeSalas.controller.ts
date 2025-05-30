@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
 import { DisponibilidadeSalasService } from './disponibilidadeSalas.service';
 import { CreateDisponibilidadeSalasDTO } from './dto/disponibilidadeSalas.dto';
 import { DisponibilidadeSalas } from './disponibilidadeSalas.entity';
@@ -15,11 +15,21 @@ export class DisponibilidadeSalasController {
         return this.service.getHorarioReal(salaId, data);
     }
 
-
     @Get()
     async getAll(): Promise<DisponibilidadeSalas[]> {
         return this.service.findAll();
     }
+
+    @Get('sala/:salaId')
+    async getDisponibilidadesPorSala(@Param('salaId', ParseIntPipe) salaId: number) {
+        return this.service.getPorSala(salaId);
+    }
+
+    @Put('upsert')
+    async upsertDisponibilidades(@Body() data: CreateDisponibilidadeSalasDTO[]) {
+        return this.service.upsertDisponibilidades(data);
+    }
+
 
     @Post()
     async create(@Body() dto: CreateDisponibilidadeSalasDTO): Promise<DisponibilidadeSalas> {

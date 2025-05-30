@@ -60,6 +60,7 @@ export class ReservasService {
       diaHoraFim: data.diaHoraFim,
       status: data.status,
       motivoCancelamento: data.motivoCancelamento,
+      valorHoraNaReserva: sala.valorHora,
     });
 
     // Salva a reserva no banco de dados
@@ -85,6 +86,20 @@ export class ReservasService {
 
     Object.assign(reserva, data);
     return await this.reservasRepository.save(reserva);
+  }
+
+  async cancelarReserva(id: number, motivo: string): Promise<Reservas>{
+    const reserva = await this.reservasRepository.findOne({ where: {id}});
+
+    if (!reserva){
+      throw new NotFoundException(`Reserva com ID ${id} não encontrada`);
+    }
+
+    reserva.status = 'Cancelada';
+    reserva.motivoCancelamento = motivo;
+
+    return await this.reservasRepository.save(reserva);
+
   }
 
   async deleteReserva(id: number): Promise<void> {

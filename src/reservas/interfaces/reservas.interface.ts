@@ -5,4 +5,5 @@ export interface ReservasInterface {
     diaHoraFim: Date;
     status: string;
     motivoCancelamento: string;
+    valorHoraNaReserva: number;
 }

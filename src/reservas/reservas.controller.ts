@@ -2,10 +2,11 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@
 import { ReservasInterface } from "./interfaces/reservas.interface";
 import { Reservas } from "./reservas.entity";
 import { ReservasService } from "./reservas.service";
+import { CancelarReservaDTO } from "./dto/cancelarReserva.dto";
 
 @Controller('reservas')
 export class ReservasController {
-    constructor(private reservasService: ReservasService) {}
+    constructor(private reservasService: ReservasService) { }
 
     @Get()
     getReservas(): Promise<Reservas[]> {
@@ -18,7 +19,7 @@ export class ReservasController {
     }
 
     @Get('usuario/:usuarioId')
-    getReservasByUsuarioId(@Param('usuarioId',ParseIntPipe)usuarioId: number): Promise<Reservas[]> {
+    getReservasByUsuarioId(@Param('usuarioId', ParseIntPipe) usuarioId: number): Promise<Reservas[]> {
         return this.reservasService.getReservasByUsuarioId(usuarioId);
     }
 
@@ -27,10 +28,19 @@ export class ReservasController {
         return this.reservasService.createReserva(data);
     }
 
+    @Put('/cancelar/:id')
+    cancelarReserva(
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: CancelarReservaDTO,
+    ): Promise<Reservas> {
+        return this.reservasService.cancelarReserva(id, body.motivo);
+    }
+
+
     @Put(':id')
     updateReserva(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() data: Partial<ReservasInterface>
+        @Param('id', ParseIntPipe) id: number,
+        @Body() data: Partial<ReservasInterface>
     ): Promise<Reservas> {
         return this.reservasService.updateReserva(id, data);
     }
