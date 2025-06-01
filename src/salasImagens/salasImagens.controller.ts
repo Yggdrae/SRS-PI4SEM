@@ -41,4 +41,12 @@ export class SalasImagensController {
   deleteImagem(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.salasImagensService.deleteImagem(id);
   }
+
+  @Post('reorganizar')
+  async reorganizarById(
+    @Body('salaId', ParseIntPipe) salaId: number,
+    @Body('ids') ids: number[],
+  ): Promise<void> {
+    return this.salasImagensService.reorganizarById(salaId, ids);
+  }
 }

@@ -2,6 +2,7 @@ import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from "@
 import { SalasService } from "./salas.service";
 import { Salas } from "./salas.entity";
 import { SalasInterface } from "./interfaces/salas.interface";
+import { SalaDto } from "./dto/sala.dto";
 
 @Controller('salas')
 export class SalasController {
@@ -12,7 +13,7 @@ export class SalasController {
         return this.salasService.getSalas();
     }
     @Get('full')
-    getSalasFull(): Promise<Salas[]> {
+    getSalasFull(): Promise<SalaDto[]> {
         return this.salasService.getSalasFull();
     }
 
@@ -35,7 +36,7 @@ export class SalasController {
     }
 
     @Get('/destaques')
-    getSalasDestaque(): Promise<Salas[]> {
+    getSalasDestaque(): Promise<SalaDto[]> {
         return this.salasService.getSalasDestaque();
     }
     @Get(':id')
@@ -43,8 +44,14 @@ export class SalasController {
         return this.salasService.getSalaById(id);
     }
     @Get('/full/:id')
-    getSalaFullById(@Param('id', ParseIntPipe) id: number): Promise<Salas> {
-        return this.salasService.getSalaFullById(id);
+    getSalaFullById(@Param('id', ParseIntPipe) id: number): Promise<SalaDto> {
+        try{
+            return this.salasService.getSalaFullById(id);
+        }
+        catch(e){
+            console.log(e);
+            throw new Error(e);
+        }
     }
 
 

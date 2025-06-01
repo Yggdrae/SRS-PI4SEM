@@ -52,20 +52,49 @@ export class SalasImagensService {
       throw new BadRequestException(`Sala com ID ${data.sala} não encontrada`);
     }
 
+    const imagensExistentes = await this.salasImagensRepository.count({
+      where: { sala: { id: data.sala } },
+    });
+
     const imagem = this.salasImagensRepository.create({
       sala: salaEntity,
       imagem: data.imagem,
       nomeArquivo: data.nomeArquivo,
       tipoMime: data.tipoMime,
+      ordem: imagensExistentes + 1,
     });
 
     return await this.salasImagensRepository.save(imagem);
   }
 
+
   async deleteImagem(id: number): Promise<void> {
     const result = await this.salasImagensRepository.delete(id);
     if (result.affected === 0) {
       throw new NotFoundException(`Imagem com ID ${id} não encontrada`);
+    }
+  }
+
+  async reorganizarById(salaId: number, ids: number[]): Promise<void> {
+    if (!salaId || !Array.isArray(ids) || ids.length === 0) {
+      throw new BadRequestException('Sala e lista de IDs devem ser informadas.');
+    }
+
+    // Busca todas imagens da sala
+    const imagensDaSala = await this.salasImagensRepository.find({
+      where: { sala: { id: salaId } },
+    });
+
+    const idsDaSala = imagensDaSala.map(img => img.id);
+    const todosPertencem = ids.every(id => idsDaSala.includes(id));
+
+    if (!todosPertencem) {
+      throw new BadRequestException('Todos os IDs devem pertencer à sala informada.');
+    }
+
+    for (let i = 0; i < ids.length; i++) {
+      const id = ids[i];
+      await this.salasImagensRepository.update({ id }, { ordem: i + 1 });
     }
   }
 }
