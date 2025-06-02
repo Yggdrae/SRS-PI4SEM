@@ -97,7 +97,7 @@ export class SalasService {
 
     async getSalaFullById(id: number): Promise<SalaDto> {
         try {
-            const sala = await this.salasRepository.findOne({ where: { id }, relations: ['salasRecursos', 'salasRecursos.recurso', 'salasImagens'] });
+            const sala = await this.salasRepository.findOne({ where: { id }, relations: ['salasRecursos', 'salasRecursos.recurso', 'salasImagens', 'disponibilidades'] });
             if (!sala) {
                 throw new NotFoundException(`Sala com ID ${id} não encontrada`);
             }
