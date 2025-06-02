@@ -21,4 +21,8 @@ export class SalasImagens {
 
   @Column({ nullable: true })
   descricao?: string;
+
+  @Column({ default: 0 })
+  ordem: number;
+
 }
