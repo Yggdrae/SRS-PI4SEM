@@ -13,4 +13,5 @@ export class SalaDto {
   salasImagens: SalasImagemDto[];
   salasRecursos: SalaRecursoDto[];
   disponibilidades: DisponibilidadeSalaDto[];
+  ativa: boolean;
 }

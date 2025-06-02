@@ -14,35 +14,34 @@ import { DataSource } from 'typeorm';
 
 
 @Module({
-    imports: [DatabaseModule],
-    controllers: [DisponibilidadeSalasController],
-    providers: [
-      DisponibilidadeSalasService,
-      {
-        provide: 'DISPONIBILIDADESALAS_REPOSITORY',
-        useFactory: (dataSource: DataSource) =>
-          dataSource.getRepository(DisponibilidadeSalas),
-        inject: ['DATA_SOURCE'],
-      },
-      {
-        provide: 'SALAS_REPOSITORY',
-        useFactory: (dataSource: DataSource) =>
-          dataSource.getRepository(Salas),
-        inject: ['DATA_SOURCE'],
-      },
-      {
-        provide: 'RESERVAS_REPOSITORY',
-        useFactory: (dataSource: DataSource) =>
-          dataSource.getRepository(Reservas),
-        inject: ['DATA_SOURCE'],
-      },
-      {
-        provide: 'EXCECOESDISPONIBILIDADE_REPOSITORY',
-        useFactory: (dataSource: DataSource) =>
-          dataSource.getRepository(ExcecoesDisponibilidade),
-        inject: ['DATA_SOURCE'],
-      },
-    ],
-  })
-  export class DisponibilidadeSalasModule {}
-  
+  imports: [DatabaseModule],
+  controllers: [DisponibilidadeSalasController],
+  providers: [
+    DisponibilidadeSalasService,
+    {
+      provide: 'DISPONIBILIDADESALAS_REPOSITORY',
+      useFactory: (dataSource: DataSource) =>
+        dataSource.getRepository(DisponibilidadeSalas),
+      inject: ['DATA_SOURCE'],
+    },
+    {
+      provide: 'SALAS_REPOSITORY',
+      useFactory: (dataSource: DataSource) =>
+        dataSource.getRepository(Salas),
+      inject: ['DATA_SOURCE'],
+    },
+    {
+      provide: 'RESERVAS_REPOSITORY',
+      useFactory: (dataSource: DataSource) =>
+        dataSource.getRepository(Reservas),
+      inject: ['DATA_SOURCE'],
+    },
+    {
+      provide: 'EXCECOESDISPONIBILIDADE_REPOSITORY',
+      useFactory: (dataSource: DataSource) =>
+        dataSource.getRepository(ExcecoesDisponibilidade),
+      inject: ['DATA_SOURCE'],
+    },
+  ],
+})
+export class DisponibilidadeSalasModule { }

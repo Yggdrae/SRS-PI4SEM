@@ -26,7 +26,7 @@ export class Reservas {
     @Column({ nullable: true })
     motivoCancelamento: string;
 
-    @Column('decimal', { precision: 10, scale: 2 })
+    @Column('decimal', { precision: 10, scale: 2, nullable:true })
     valorHoraNaReserva: number;
 
 }

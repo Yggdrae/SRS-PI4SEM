@@ -14,6 +14,7 @@ export class SalasService {
 
     private toDto(sala: Salas): SalaDto {
         return {
+            ativa: sala.ativa,
             id: sala.id,
             numero: sala.numero,
             andar: sala.andar,
@@ -48,11 +49,11 @@ export class SalasService {
 
 
     async getSalas(): Promise<Salas[]> {
-        return await this.salasRepository.find();
+        return await this.salasRepository.find({where: { ativa: true }});
     }
 
     async getSalasFull(): Promise<SalaDto[]> {
-        const salas = await this.salasRepository.find({ relations: ['salasRecursos', 'salasRecursos.recurso', 'salasImagens', 'disponibilidades'] });
+        const salas = await this.salasRepository.find({ where: { ativa: true }, relations: ['salasRecursos', 'salasRecursos.recurso', 'salasImagens', 'disponibilidades'] });
         return salas.map(this.toDto);
     }
 
@@ -66,7 +67,7 @@ export class SalasService {
     }
 
     async updateSalas(id: number, data: Partial<SalasInterface>): Promise<Salas> {
-        const sala = await this.salasRepository.findOne({ where: { id } });
+        const sala = await this.salasRepository.findOne({ where: { id, ativa:true } });
         if (!sala) {
             throw new NotFoundException(`Sala com ID ${id} não encontrada`);
         }
@@ -79,16 +80,18 @@ export class SalasService {
         return await this.salasRepository.save(sala);
     }
 
-    async deleteSalas(id: number): Promise<void> {
-        const result = await this.salasRepository.delete(id);
-
-        if (result.affected === 0) {
-            throw new NotFoundException(`Sala com ID ${id} não encontrada para exclusão`);
+    async deleteSalas(id: number): Promise<Salas> {
+        const sala = await this.salasRepository.findOne({ where: { id } });
+        if (!sala) {
+            throw new NotFoundException(`Sala com ID ${id} não encontrada`);
         }
+
+        sala.ativa = false;
+        return await this.salasRepository.save(sala);
     }
 
     async getSalaById(id: number): Promise<Salas> {
-        const sala = await this.salasRepository.findOne({ where: { id } });
+        const sala = await this.salasRepository.findOne({ where: { id: id, ativa: true } });
         if (!sala) {
             throw new NotFoundException(`Sala com ID ${id} não encontrada`);
         }
@@ -97,7 +100,7 @@ export class SalasService {
 
     async getSalaFullById(id: number): Promise<SalaDto> {
         try {
-            const sala = await this.salasRepository.findOne({ where: { id }, relations: ['salasRecursos', 'salasRecursos.recurso', 'salasImagens', 'disponibilidades'] });
+            const sala = await this.salasRepository.findOne({ where: { id: id, ativa: true }, relations: ['salasRecursos', 'salasRecursos.recurso', 'salasImagens', 'disponibilidades'] });
             if (!sala) {
                 throw new NotFoundException(`Sala com ID ${id} não encontrada`);
             }
@@ -111,7 +114,7 @@ export class SalasService {
 
     async getSalasDestaque(): Promise<SalaDto[]> {
         const salas = await this.salasRepository.find({
-            where: { isDestaque: true },
+            where: { isDestaque: true, ativa: true },
             relations: ['salasRecursos', 'salasRecursos.recurso', 'salasImagens'],
         });
         return salas.map(this.toDto);

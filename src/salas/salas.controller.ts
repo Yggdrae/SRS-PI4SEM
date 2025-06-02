@@ -31,7 +31,7 @@ export class SalasController {
     }
 
     @Delete(':id')
-    deleteSalas(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    deleteSalas(@Param('id', ParseIntPipe) id: number): Promise<Salas> {
         return this.salasService.deleteSalas(id);
     }
 

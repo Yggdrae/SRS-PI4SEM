@@ -40,5 +40,7 @@ export class Salas {
   @OneToMany(() => DisponibilidadeSalas, disponibilidade => disponibilidade.sala)
   disponibilidades: DisponibilidadeSalas[];
 
+  @Column({ default: true })
+  ativa: boolean;
 
 }

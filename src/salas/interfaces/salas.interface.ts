@@ -5,4 +5,5 @@ export interface SalasInterface {
   capacidade: number;
   valorHora: number;
   isDestaque: boolean;
+  ativa: boolean;
 }

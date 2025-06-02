@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Usuario } from 'src/usuarios/usuarios.entity';
 
 @Entity()
@@ -18,7 +18,7 @@ export class Cartao {
     @Column()
     bandeira: string;
 
-    @Column()
+    @Column({ unique: true })
     token: string;
 
     @Column({ default: false })
