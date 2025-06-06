@@ -24,6 +24,7 @@ export class SalasImagensController {
   async createImagem(
     @UploadedFile() file: any,
     @Body('salaId') salaId: string,
+    @Body('ordem') ordem: string,
   ): Promise<SalasImagens> {
     if (!file || !salaId) {
       throw new BadRequestException('Dados obrigatórios (sala e imagem) devem ser informados');
@@ -34,6 +35,7 @@ export class SalasImagensController {
       imagem: file.buffer,
       nomeArquivo: file.originalname,
       tipoMime: file.mimetype,
+      ordem: parseInt(ordem),
     });
   }
 

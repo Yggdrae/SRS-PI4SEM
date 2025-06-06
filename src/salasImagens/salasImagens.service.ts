@@ -52,21 +52,16 @@ export class SalasImagensService {
       throw new BadRequestException(`Sala com ID ${data.sala} não encontrada`);
     }
 
-    const imagensExistentes = await this.salasImagensRepository.count({
-      where: { sala: { id: data.sala } },
-    });
-
     const imagem = this.salasImagensRepository.create({
       sala: salaEntity,
       imagem: data.imagem,
       nomeArquivo: data.nomeArquivo,
       tipoMime: data.tipoMime,
-      ordem: imagensExistentes + 1,
+      ordem: data.ordem,
     });
 
     return await this.salasImagensRepository.save(imagem);
   }
-
 
   async deleteImagem(id: number): Promise<void> {
     const result = await this.salasImagensRepository.delete(id);
