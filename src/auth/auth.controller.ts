@@ -1,4 +1,12 @@
-import { Body, Controller, Post, Res, Get, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Res,
+  Get,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dto/login.dto';
 import { Response, Request } from 'express';
@@ -12,7 +20,10 @@ export class AuthController {
   ) {}
 
   @Post('login')
-  async login(@Body() loginDto: LoginDTO, @Res({ passthrough: true }) res: Response) {
+  async login(
+    @Body() loginDto: LoginDTO,
+    @Res({ passthrough: true }) res: Response,
+  ) {
     const result = await this.authService.login(loginDto);
 
     res.cookie('jwt', result.token, {
@@ -34,10 +45,10 @@ export class AuthController {
   }
 
   @Get('check')
-  async check(@Req() req: Request) {
+  async check(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     const token = req.cookies['jwt'];
     if (!token) {
-      return { authenticated: false, usuario: null };
+      return { authenticated: false };
     }
 
     try {
@@ -50,7 +61,8 @@ export class AuthController {
         },
       };
     } catch (error) {
-      return { authenticated: false, usuario: null };
+      res.clearCookie('jwt');
+      return { authenticated: false };
     }
   }
 }
