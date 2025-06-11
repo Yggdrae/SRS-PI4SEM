@@ -11,6 +11,8 @@ import { CartoesModule } from "./cartoes/cartoes.module";
 import { PagamentosModule } from "./pagamentos/pagamentos.module";
 import { ExcecoesDisponibilidadeModule } from "./excecoesDisponibilidade/excecoesDisponibilidade.module";
 import { SalasImagensModule } from "./salasImagens/salasImagens.module";
+import { ScheduleModule } from "@nestjs/schedule";
+import { TasksModule } from "./scheduler/tasks.module";
 
 
 @Module({
@@ -26,7 +28,9 @@ import { SalasImagensModule } from "./salasImagens/salasImagens.module";
         CartoesModule, 
         PagamentosModule, 
         ExcecoesDisponibilidadeModule,
-        SalasImagensModule
+        SalasImagensModule,
+        TasksModule,
+        ScheduleModule.forRoot()
     ],
 })
 
