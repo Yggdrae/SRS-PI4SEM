@@ -4,8 +4,10 @@ import { AppModule } from './App.module';
 import { AllExceptionsFilter } from './filters/http-exception.filter';
 import * as cookieParser from 'cookie-parser';
 import { randomUUID } from 'crypto';
+import * as dotenv from 'dotenv';
 
 async function bootstrap() {
+  dotenv.config();
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   if (!globalThis.crypto) {
@@ -18,7 +20,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: 'http://localhost:3000',
+    origin: process.env.CORS_ORIGIN,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: [
